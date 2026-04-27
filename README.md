@@ -73,12 +73,15 @@ python3 -m http.server 8080
 
 ## Assets e substituição futura
 
-Atualmente os sprites/tile textures são placeholders gerados em código na `BootScene`.
-Para trocar por arte real:
+Agora a `BootScene` já tenta carregar automaticamente o arquivo `assets/rpg-snes-sheet.png` e recorta os sprites principais para os locais corretos (`player`, `npc`, `shopkeeper`, `monster`, `tile_grass`, `tile_path`, `tile_water`, `tile_stone`).
 
-1. Substitua geração de textura por `this.load.image(...)` / `this.load.spritesheet(...)` no preload.
+Se o arquivo não existir, o jogo entra em modo fallback com placeholders gerados em código.
+
+Para usar arte real:
+
+1. Salve a imagem-base enviada neste projeto em: `assets/rpg-snes-sheet.png`.
 2. Mantenha as keys usadas no projeto (`player`, `monster`, `tile_grass`, etc.) para não quebrar cenas.
-3. Ajuste tamanho dos tiles/sprites em `src/config.js` conforme necessário.
+3. Se usar outro spritesheet, ajuste as coordenadas em `src/scenes/BootScene.js` (`SPRITE_REGIONS`).
 
 ## Observações
 
