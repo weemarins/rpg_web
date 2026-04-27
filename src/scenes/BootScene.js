@@ -2,6 +2,16 @@ import { TILE_SIZE } from '../config.js';
 
 const SHEET_KEY = 'rpg_full_sheet';
 const SHEET_PATH = 'assets/rpg-snes-sheet.png';
+const INDIVIDUAL_ASSET_PATHS = {
+  player: 'assets/player.png',
+  npc: 'assets/npc.png',
+  shopkeeper: 'assets/shopkeeper.png',
+  monster: 'assets/monster.png',
+  tile_grass: 'assets/tile_grass.png',
+  tile_path: 'assets/tile_path.png',
+  tile_water: 'assets/tile_water.png',
+  tile_stone: 'assets/tile_stone.png'
+};
 
 // Coordenadas extraídas do spritesheet mestre (2048x1533).
 // Caso use outro arquivo, ajuste os recortes abaixo.
@@ -23,16 +33,53 @@ export class BootScene extends Phaser.Scene {
 
   preload() {
     this.load.image(SHEET_KEY, SHEET_PATH);
+    Object.entries(INDIVIDUAL_ASSET_PATHS).forEach(([key, path]) => {
+      this.load.image(`${key}_external`, path);
+    });
   }
 
   create() {
-    if (this.textures.exists(SHEET_KEY)) {
+    const hasExternalAssets = this.applyExternalTextures();
+
+    if (!hasExternalAssets && this.textures.exists(SHEET_KEY)) {
       this.createTexturesFromSheet();
-    } else {
+    }
+
+    if (!this.hasAllRequiredTextures()) {
       this.createFallbackTextures();
     }
 
     this.scene.start('menu');
+  }
+
+  applyExternalTextures() {
+    let loadedAny = false;
+
+    Object.keys(INDIVIDUAL_ASSET_PATHS).forEach((key) => {
+      const externalKey = `${key}_external`;
+      if (!this.textures.exists(externalKey)) return;
+
+      const sourceImage = this.textures.get(externalKey).getSourceImage();
+      const width = sourceImage?.width ?? TILE_SIZE;
+      const height = sourceImage?.height ?? TILE_SIZE;
+      const texture = this.textures.createCanvas(key, width, height);
+
+      if (!texture) return;
+
+      const ctx = texture.getContext();
+      ctx.imageSmoothingEnabled = false;
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(sourceImage, 0, 0, width, height);
+      texture.refresh();
+
+      loadedAny = true;
+    });
+
+    return loadedAny;
+  }
+
+  hasAllRequiredTextures() {
+    return Object.keys(SPRITE_REGIONS).every((key) => this.textures.exists(key));
   }
 
   createTexturesFromSheet() {
