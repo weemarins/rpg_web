@@ -73,15 +73,20 @@ python3 -m http.server 8080
 
 ## Assets e substituição futura
 
-Agora a `BootScene` já tenta carregar automaticamente o arquivo `assets/rpg-snes-sheet.png` e recorta os sprites principais para os locais corretos (`player`, `npc`, `shopkeeper`, `monster`, `tile_grass`, `tile_path`, `tile_water`, `tile_stone`).
+Agora a `BootScene` tenta carregar assets nesta ordem:
 
-Se o arquivo não existir, o jogo entra em modo fallback com placeholders gerados em código.
+1. arquivos individuais em `assets/` (`player.png`, `npc.png`, `shopkeeper.png`, `monster.png`, `tile_grass.png`, `tile_path.png`, `tile_water.png`, `tile_stone.png`);
+2. spritesheet `assets/rpg-snes-sheet.png` com recorte automático;
+3. placeholders gerados em código (fallback final).
+
+Assim, se você já tiver imagens separadas, elas serão usadas diretamente.
 
 Para usar arte real:
 
-1. Salve a imagem-base enviada neste projeto em: `assets/rpg-snes-sheet.png`.
+1. Se for usar spritesheet único, salve a imagem-base em: `assets/rpg-snes-sheet.png`.
 2. Mantenha as keys usadas no projeto (`player`, `monster`, `tile_grass`, etc.) para não quebrar cenas.
 3. Se usar outro spritesheet, ajuste as coordenadas em `src/scenes/BootScene.js` (`SPRITE_REGIONS`).
+4. Se preferir, substitua por PNGs individuais com os nomes listados acima dentro de `assets/`.
 
 ## Observações
 
